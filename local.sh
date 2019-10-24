@@ -1,5 +1,6 @@
 #!/bin/sh
 # Local variables in POSIX sh
+var=toplevel
 
 a() {
     var=local
