@@ -4,7 +4,6 @@
 a() {
     var=local
     echo "$var"
-    # Global variable
     var2=global
     echo "$var2"
 }
@@ -14,7 +13,7 @@ alias a='var= a'
 a
 echo "${var-unset}"
 echo "${var2-unset}"
-unset var
+unset var var2
 
 # Bash-compatible
 _b() {
