@@ -3,24 +3,21 @@
 
 a() {
     var=local
-    echo "$var"
     var2=global
-    echo "$var2"
+    printf '%s\n' "$var $var2"
 }
 
 alias a='var= a'
 
 a
-echo "${var-unset}"
-echo "${var2-unset}"
+printf '%s\n' "${var-unset} ${var2-unset}"
 unset var var2
 
 # Bash-compatible
 _b() {
     var=local
-    echo "$var"
     var2=global
-    echo "$var2"
+    printf '%s\n' "$var $var2"
 }
 
 b() {
@@ -28,5 +25,4 @@ b() {
 }
 
 b
-echo "${var-unset}"
-echo "${var2-unset}"
+printf '%s\n' "${var-unset} ${var2-unset}"
