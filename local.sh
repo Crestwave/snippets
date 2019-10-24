@@ -2,20 +2,26 @@
 # Local variables in POSIX sh
 
 a() {
-    var=1
+    var=local
     echo "$var"
+    # Global variable
+    var2=global
+    echo "$var2"
 }
 
 alias a='var= a'
 
 a
 echo "${var-unset}"
+echo "${var2-unset}"
 unset var
 
 # Bash-compatible
 _b() {
-    var=1
+    var=local
     echo "$var"
+    var2=global
+    echo "$var2"
 }
 
 b() {
@@ -24,3 +30,4 @@ b() {
 
 b
 echo "${var-unset}"
+echo "${var2-unset}"
