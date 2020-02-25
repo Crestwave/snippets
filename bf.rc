@@ -1,0 +1,61 @@
+#!/usr/bin/env rc
+prog=`{ascii -d `{ascii -n -d `{cat $1}}}
+tape=`{echo 'for(i=0;i<30002;++i) print 0' | bc}
+ptr=(1 2 3)
+depth=0
+i=0
+j=0
+
+fn write {
+	tape=($tape(1-$ptr(1)) $1 $tape($ptr(3)^-))
+}
+
+while(! ~ $i $#prog){
+	i=`{echo $i+1 | bc}
+	switch($prog($i)){
+	case '>'
+		ptr=`{echo $ptr(2)';'$ptr(2)+1';'$ptr(2)+2 | bc}
+	case '<'
+		ptr=`{echo $ptr(2)-2';'$ptr(2)-1';'$ptr(2) | bc}
+	case '+'
+		write `{echo $tape($ptr(2))+1 | bc}
+		if(~ $tape($ptr(2)) 256)
+			write 0
+	case '-'
+		write `{echo $tape($ptr(2))-1 | bc}
+		if(~ $tape($ptr(2)) -1)
+			write 255
+	case '.'
+		echo -n `{ascii -c -d $tape($ptr(2)) | read}
+	case ','
+		if(~ $j $#input){
+			input=`{ascii -n -d `{read}}
+			j=0
+		}
+		if(! ~ $j $#input){
+			j=`{echo $j+1 | bc}
+			write $input($j)
+		}
+	case '['
+		if(! ~ $tape($ptr(2)) 0){
+			k=$#stack
+			stack=($stack $i)
+		}
+		if not{
+			while(! ~ $depth 0){
+				switch($prog($i)){
+				case '['
+					depth=`{echo $depth+1 | bc}
+				case ']'
+					depth=`{echo $depth-1 | bc}
+				}
+				i=`{echo $i+1 | bc}
+			}
+		}
+	case ']'
+		if(! ~ $tape($ptr(2)) 0)
+			i=$stack($#stack)
+		if not
+			stack=$stack(1-$k)
+	}
+}
