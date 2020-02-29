@@ -1,5 +1,4 @@
 #!/bin/sh
-alias echo.="printf '\n'"
 pause() {
 	printf 'Press any key to continue...\n'
 	stty raw -echo
@@ -13,20 +12,20 @@ echo Builder by damysteryman, edited by CLF78
 echo Powered by WIT by Wiimm
 pause
 
-echo.
+echo ''
 echo Checking resources...
 
 if ! [ -d NSMASDemo ]; then
-	echo.
+	echo ''
 	echo Cannot find the folder containing the mod files.
-	echo.
+	echo ''
 	echo Please make sure you have it in the same directory
 	echo as this script. Exiting...
-	echo.
+	echo ''
 	pause
 	exit 1
 else
-	echo.
+	echo ''
 fi
 
 basever=UNK
@@ -35,7 +34,7 @@ if ! [ -d nsmb.d ]; then
 	echo Unpacking original game...
 	wit extract -s ./ -1 -n SMN.01 . nsmb.d --psel=DATA -ovv
 fi
-echo.
+echo ''
 if [ -f nsmb.d/files/COPYDATE_LAST_2009-10-03_232911 ]; then
 	basever=EURv1
 	gameid=SMNP01
@@ -72,7 +71,7 @@ if [ "$basever" = UNK ]; then
 	exit 1
 fi
 
-echo.
+echo ''
 echo Deleting unused files...
 
 rm -f nsmb.d/files/Effect/effect_wnmario_demo.breff
@@ -698,7 +697,7 @@ case $gameid in
 		;;
 esac
 
-echo.
+echo ''
 echo Copying mod files...
 
 cp NSMASDemo/Tilesets/* nsmb.d/files/Stage/Texture/ 2>/dev/null
@@ -884,11 +883,11 @@ esac
 [ "$gameid" = SMNE01 ] && gameid=SMNE79
 [ "$gameid" = SMNJ01 ] && gameid=SMNJ79
 
-echo.
+echo ''
 echo Applying memory patches to main executable...
 wit dolpatch nsmb.d/sys/main.dol xml=patch/patch.xml -s NSMASDemo -q
 
-echo.
+echo ''
 echo Format Selection:
 echo 1. ISO
 echo 2. WBFS
@@ -896,7 +895,7 @@ echo "3. Extracted Filesystem (ADVANCED USERS ONLY)"
 echo Enter the number corresponding to the format you want
 
 end() {
-	echo.
+	echo ''
 	echo "All done!"
 	pause
 	exit
@@ -910,7 +909,7 @@ while :; do
 		2) fileext=wbfs ;;
 		3) end ;;
 		*)
-			echo.
+			echo ''
 			echo Invalid option selected.
 			continue
 			;;
@@ -926,11 +925,11 @@ case $fileext in
 		;;
 esac
 
-echo.
+echo ''
 echo Rebuilding game...
 wit copy nsmb.d "$destpath" -ovv --disc-id="$gameid" --name="Newer Super Mario All-Stars Demo"
 
-echo.
+echo ''
 echo Cleaning up...
 rm -rf nsmb.d
 end
