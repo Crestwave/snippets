@@ -28,6 +28,11 @@ else
 	echo ''
 fi
 
+case $(uname -s) in
+	Linux) [ -f wit/linux/wit ] && alias wit=wit/linux/wit ;;
+	Darwin) [ -f wit/darwin/wit ] && alias wit=wit/darwin/wit ;;
+esac
+
 basever=UNK
 
 if ! [ -d nsmb.d ]; then
