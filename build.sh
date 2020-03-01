@@ -8,7 +8,7 @@ pause() {
 
 clear
 echo NSMASR ISO Builder
-echo Builder by damysteryman, edited by CLF78
+echo "Builder by damysteryman, edited by CLF78 & Frenzies"
 echo Powered by WIT by Wiimm
 pause
 
@@ -29,8 +29,8 @@ else
 fi
 
 case $(uname -s) in
-	Linux) [ -f wit/linux/wit ] && alias wit=wit/linux/wit ;;
-	Darwin) [ -f wit/darwin/wit ] && alias wit=wit/darwin/wit ;;
+	Linux) [ -f wit/linux/wit ] && chmod 755 wit/linux/wit && alias wit=wit/linux/wit ;;
+	Darwin) [ -f wit/darwin/wit ] && chmod 755 wit/darwin/wit && alias wit=wit/darwin/wit ;;
 esac
 
 basever=UNK
@@ -105,7 +105,6 @@ rm -f nsmb.d/files/Env/Env_movie.arc
 rm -rf nsmb.d/files/Layout/corseSelectUIGuide
 rm -rf nsmb.d/files/Layout/cursor
 rm -rf nsmb.d/files/Layout/demoMessage
-rm -rf nsmb.d/files/Layout/draw
 rm -rf nsmb.d/files/Layout/letterWindow
 rm -rf nsmb.d/files/Layout/MultiCourseSelect
 rm -rf nsmb.d/files/Layout/MultiCourseSelectContents
