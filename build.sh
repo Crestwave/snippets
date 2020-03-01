@@ -1,4 +1,6 @@
 #!/bin/sh
+cd "${0%/*}"
+
 pause() {
 	printf 'Press any key to continue...\n'
 	stty raw -echo
