@@ -10,4 +10,5 @@ set +f -- $str
 IFS=
 spaces=$*
 
+unset IFS
 printf '%s\n' "${#spaces}"
