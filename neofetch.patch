@@ -1,0 +1,166 @@
+--- neofetch
++++ patched
+@@ -30,7 +30,15 @@
+ 
+ version=7.0.0
+ 
+-bash_version=${BASH_VERSION/.*}
++# Planned for upstream
++if [[ "$BASH_VERSION" ]]; then
++    bash_version=${BASH_VERSION/.*}
++else
++    BASH_VERSION=$(bash -c "printf %s \"\$BASH_VERSION\"")
++    bash_version=5
++    shopt -s eval_unsafe_arith
++fi
++
+ sys_locale=${LANG:-C}
+ XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-${HOME}/.config}
+ PATH=$PATH:/usr/xpg4/bin:/usr/sbin:/sbin:/usr/etc:/usr/libexec
+@@ -930,7 +938,9 @@
+         ;;
+     esac
+ 
+-    os=$_
++    #262
++    #os=$_
++    os=Linux
+ }
+ 
+ get_distro() {
+@@ -1425,7 +1435,9 @@
+     # dir: Count files or dirs in a glob.
+     # pac: If packages > 0, log package manager name.
+     # tot: Count lines in command output.
+-    has() { type -p "$1" >/dev/null && manager=$_; }
++    #262
++    # Possibly upstreamable, but not much point in it
++    has() { type -p "$1" >/dev/null && manager=$1; }
+     dir() { ((packages+=$#)); pac "$#"; }
+     pac() { (($1 > 0)) && { managers+=("$1 (${manager})"); manager_string+="${manager}, "; }; }
+     tot() { IFS=$'\n' read -d "" -ra pkgs <<< "$("$@")";((packages+=${#pkgs[@]}));pac "${#pkgs[@]}";}
+@@ -1606,6 +1618,13 @@
+             shell=${shell/Copyright*}
+         ;;
+ 
++        # Planned for upstream
++        osh)
++            shell+=$("$SHELL" --version)
++            shell=${shell/Oil version }
++            shell=${shell/$'\n'*}
++        ;;
++
+         *)
+             shell+=$("$SHELL" --version 2>&1)
+             shell=${shell/ $shell_name}
+@@ -1729,7 +1748,9 @@
+     # If function was run, stop here.
+     ((wm_run == 1)) && return
+ 
+-    case $uname in
++    # This was probably a mistake and should be upstreamed
++    # It's cool that OSH helped catch this
++    case ${uname[0]} in
+         *OpenBSD*) ps_flags=(x -c) ;;
+         *)         ps_flags=(-e) ;;
+     esac
+@@ -2331,6 +2352,7 @@
+             # Checking the first two array elements should
+             # be safe since there won't be 2 intel outputs if
+             # there's a dedicated GPU in play.
++
+             [[ "${gpus[0]}" == *Intel* && "${gpus[1]}" == *Intel* ]] && unset -v "gpus[0]"
+ 
+             for gpu in "${gpus[@]}"; do
+@@ -2340,7 +2362,11 @@
+                     { unset -v gpu; continue; }
+ 
+                 case $gpu in
+-                    *"advanced"*)
++                    #701
++                    # Possibly upstreamable as proper capitalization is nice
++                    # even if not necessary, and is done in the rest of the
++                    # script.
++                    *"Advanced"*)
+                         brand="${gpu/*AMD*ATI*/AMD ATI}"
+                         brand="${brand:-${gpu/*AMD*/AMD}}"
+                         brand="${brand:-${gpu/*ATI*/ATi}}"
+@@ -2354,13 +2380,13 @@
+                         gpu="$brand $gpu"
+                     ;;
+ 
+-                    *"nvidia"*)
++                    *"NVIDIA"*)
+                         gpu="${gpu/*\[}"
+                         gpu="${gpu/\]*}"
+                         gpu="NVIDIA $gpu"
+                     ;;
+ 
+-                    *"intel"*)
++                    *"Intel"*)
+                         gpu="${gpu/*Intel/Intel}"
+                         gpu="${gpu/\(R\)}"
+                         gpu="${gpu/Corporation}"
+@@ -2371,7 +2397,7 @@
+                         [[ -z "$(trim "$gpu")" ]] && gpu="Intel Integrated Graphics"
+                     ;;
+ 
+-                    *"virtualbox"*)
++                    *"VirtualBox"*)
+                         gpu="VirtualBox Graphics Adapter"
+                     ;;
+ 
+@@ -3806,18 +3832,20 @@
+         line=${line//\\\\/\\}
+         line=${line//█/ }
+         ((++lines,${#line}>ascii_len)) && ascii_len="${#line}"
+-    done <<< "${ascii_data//\$\{??\}}"
++    #702
++    done <<< "${ascii_data//\$"{"??"}"}"
+ 
+     # Fallback if file not found.
+     ((lines==1)) && { lines=; ascii_len=; image_source=auto; get_distro_ascii; print_ascii; return; }
+ 
+     # Colors.
+-    ascii_data="${ascii_data//\$\{c1\}/$c1}"
+-    ascii_data="${ascii_data//\$\{c2\}/$c2}"
+-    ascii_data="${ascii_data//\$\{c3\}/$c3}"
+-    ascii_data="${ascii_data//\$\{c4\}/$c4}"
+-    ascii_data="${ascii_data//\$\{c5\}/$c5}"
+-    ascii_data="${ascii_data//\$\{c6\}/$c6}"
++    #702
++    ascii_data="${ascii_data//\$"{c1}"/$c1}"
++    ascii_data="${ascii_data//\$"{c2}"/$c2}"
++    ascii_data="${ascii_data//\$"{c3}"/$c3}"
++    ascii_data="${ascii_data//\$"{c4}"/$c4}"
++    ascii_data="${ascii_data//\$"{c5}"/$c5}"
++    ascii_data="${ascii_data//\$"{c6}"/$c6}"
+ 
+     ((text_padding=ascii_len+gap))
+     printf '%b\n' "$ascii_data${reset}"
+@@ -4263,7 +4291,15 @@
+     [[ "$prin" ]] && return
+ 
+     # Update the variable.
+-    output="$(trim "${!2:-${!1}}")"
++    #697
++    # Possibly upstreamable as it is pretty hacky behavior; it doesn't
++    # work with an empty parameter or an unset normal variable.
++    #output="$(trim "${!2:-${!1}}")"
++    if [[ "$2" ]]; then
++        output="$(trim "${!2}")"
++    else
++        output="$(trim "${!1}")"
++    fi
+ 
+     if [[ "$2" && "${output// }" ]]; then
+         prin "$1" "$output"
+@@ -4332,6 +4368,8 @@
+ }
+ 
+ trim() {
++    #698
++    [[ "$BASH_VERSION" ]] || set "${@//\\/\\\\}"
+     set -f
+     # shellcheck disable=2048,2086
+     set -- $*
