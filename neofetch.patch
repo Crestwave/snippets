@@ -160,7 +160,7 @@
  
  trim() {
 +    #698
-+    [[ "$BASH_VERSION" ]] || set "${@//\\/\\\\}"
++    set "${@//\\/\\\\}"
      set -f
      # shellcheck disable=2048,2086
      set -- $*
