@@ -1,0 +1,45 @@
+diff --git a/nosj b/nosj
+index 16a022c..22d3fb5 100755
+--- a/nosj
++++ b/nosj
+@@ -5,7 +5,7 @@
+ tokenize() {
+     local j str
+ 
+-    while read -rN 1; do
++    while read -d '' -rn 1; do
+         case $REPLY in
+             [\{\}\[\],])
+                 [[ $str ]] && j+=$REPLY
+@@ -23,9 +23,11 @@ tokenize() {
+ 
+             [\"\'])
+                 [[ $str ]] && str= || str=1
+-                [[ ${j: -1} == \\ ]] && { str=1; j+=$REPLY; }
++		[[ ${j: $((${#j}-1>0?${#j}-1:0))} == \\ ]] && { str=1; j+=$REPLY; }
+             ;;
+ 
++            '') break ;;
++
+             *) j+=$REPLY ;;
+         esac
+     done
+@@ -52,8 +54,8 @@ parse() {
+                 val=${tokens[i]/*\\ }
+ 
+                 if [[ -n ${nosj[$key]} ]]; then
+-                    [[ -n ${nosj[${key}[0]]} ]] || {
+-                        nosj["${key}[0]"]=${nosj[$key]}
++                    [[ -n ${nosj[${key}'[0]']} ]] || {
++                        nosj["${key}'[0]'"]=${nosj[$key]}
+                         printf -v o 'nosj[%q]=%q' "${key}[0]" "${nosj[$key]}"
+                         out+=("$o")
+                     }
+@@ -75,6 +77,7 @@ parse() {
+ }
+ 
+ main() {
++    shopt -s eval_unsafe_arith
+     tokenize < "${1:-/dev/stdin}"
+     parse
+ }
