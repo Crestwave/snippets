@@ -1,0 +1,2 @@
+#!/bin/sh
+curl https://api.nightlight.gg/v1/shrine?pretty=true -w '\n'
